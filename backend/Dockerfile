@@ -8,8 +8,11 @@ FROM python:3.12
 WORKDIR /app
 # Дальнейшие инструкции будут выполняться в директории /app
 
-# Обновляем pip до последней версии
-RUN pip install --upgrade pip
+# Обновляем pip и устанавливаем setuptools
+RUN pip install --upgrade pip setuptools
+
+# Создаем директорию для статики
+RUN mkdir /app/collected_static
 
 # Устанавливаем gunicorn до копирования файлов приложения
 RUN pip install gunicorn==23.0.0
