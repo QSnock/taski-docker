@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13.10
+    env_file: .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - django-network
+
+  backend:
+    build: ./backend/
+    env_file: .env
+    volumes:
+      - static:/backend_static
+    depends_on:
+      - db
+    networks:
+      - django-network
+
+  frontend:
+    build: ./frontend/
+    env_file: .env
+    volumes:
+      - static:/frontend_static
+    command: cp -r /app/build/. /frontend_static/
+    depends_on:
+      - backend
+    networks:
+      - django-network
+
+  gateway:
+    build: ./gateway/
+    volumes:
+      - static:/staticfiles
+    ports:
+      - 8000:80
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - django-network
+
+volumes:
+  pg_data:
+  static:
+
+networks:
+  django-network:
+    driver: bridge
